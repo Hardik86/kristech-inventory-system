@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Parts - KrisTechna</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Parts Management</h1>
+    <div class="nav">
+        <a href="/">Home</a> |
+        <a href="/parts">Parts</a> |
+        <a href="/products">Products</a> |
+        <a href="/about">About</a>
+    </div>
+
+    <!-- MESSAGE DISPLAY -->
+    <div th:if="${param.message}" class="success" th:text="${param.message}"></div>
+    <div th:if="${param.error}" class="error" th:text="${param.error}"></div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search parts..." onkeyup="filterParts()">
+        <button onclick="clearSearch()" class="btn">Clear</button>
+    </div>
+
+    <div class="actions">
+        <a href="/parts/chooseType" class="btn">Add New Part</a>
+    </div>
+
+    <table id="partsTable">
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="part : ${parts}">
+            <td>
+                <span th:text="${part.name}"></span>
+                <small th:if="${part.multipackQuantity > 1}"
+                       th:text="' (Pack of ' + ${part.multipackQuantity} + ')'"
+                       style="color: #666; font-size: 0.9em;"></small>
+            </td>
+            <td th:text="'$' + ${part.price}"></td>
+            <td th:text="${part.inv}"></td>
+            <td th:text="${part.minInventory}"></td>
+            <td th:text="${part.maxInventory}"></td>
+            <td>
+                <a th:href="@{/parts/edit/{id}(id=${part.id})}" class="btn">Update</a>
+                <a th:href="@{/parts/delete/{id}(id=${part.id})}" class="btn delete"
+                   onclick="return confirm('Delete this part?')">Delete</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    function filterParts() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('partsTable');
+        const tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName('td')[0];
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                } else {
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        filterParts();
+    }
+</script>
+</body>
+</html>

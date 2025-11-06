@@ -1,0 +1,150 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.nav {
+    background: #333;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 3px;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.nav a:hover {
+    text-decoration: underline;
+}
+
+.actions {
+    margin: 20px 0;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 3px;
+    margin: 2px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+.btn.delete {
+    background: #dc3545;
+}
+
+.btn.delete:hover {
+    background: #c82333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background: #f8f9fa;
+}
+
+.form-group {
+    margin: 15px 0;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.part-types {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.part-type {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.parts-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.parts-list label {
+    display: block;
+    padding: 5px 0;
+}
+
+.search-bar {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.search-bar input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    flex: 1;
+}
+
+.success {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border-radius: 3px;
+    margin: 10px 0;
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 3px;
+    margin: 10px 0;
+}

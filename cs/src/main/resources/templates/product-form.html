@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${product.id != null} ? 'Edit Product' : 'Add Product'">Add Product</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${product.id != null} ? 'Edit Product' : 'Add Product'">Add Product</h1>
+    <div class="nav">
+        <a href="/">Home</a> |
+        <a href="/parts">Parts</a> |
+        <a href="/products">Products</a>
+    </div>
+
+    <div th:if="${error}" style="color: red; margin: 10px 0;" th:text="${error}"></div>
+
+    <form th:action="${product.id != null} ?
+                          @{/products/update/{id}(id=${product.id})} :
+                          @{/products/add}"
+          method="post">
+
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" name="name" th:value="${product.name}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Price:</label>
+            <input type="number" name="price" th:value="${product.price}" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label>Inventory:</label>
+            <input type="number" name="inv" th:value="${product.inv}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Min Inventory:</label>
+            <input type="number" name="minInventory" th:value="${product.minInventory}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Max Inventory:</label>
+            <input type="number" name="maxInventory" th:value="${product.maxInventory}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Associated Parts:</label>
+            <div class="parts-list">
+                <div th:each="part : ${allParts}">
+                    <label>
+                        <input type="checkbox" name="partIds" th:value="${part.id}"
+                               th:checked="${product.parts.contains(part)}">
+                        <span th:text="${part.name + ' - $' + part.price}"></span>
+                        <small th:if="${part.multipackQuantity > 1}"
+                               th:text="' (Pack of ' + ${part.multipackQuantity} + ')'"
+                               style="color: #666;"></small>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">
+            <span th:text="${product.id != null} ? 'Update' : 'Add'"></span> Product
+        </button>
+        <a href="/products" class="btn">Cancel</a>
+    </form>
+</div>
+</body>
+</html>

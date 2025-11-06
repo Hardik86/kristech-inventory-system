@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products - KrisTechna</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Products Management</h1>
+    <div class="nav">
+        <a href="/">Home</a> |
+        <a href="/parts">Parts</a> |
+        <a href="/products">Products</a> |
+        <a href="/about">About</a>
+    </div>
+
+    <div th:if="${message}" class="success" th:text="${message}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterProducts()">
+        <button onclick="clearSearch()" class="btn">Clear</button>
+    </div>
+
+    <div class="actions">
+        <a href="/products/add" class="btn">Add New Product</a>
+    </div>
+
+    <table id="productsTable">
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Parts</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.name}"></td>
+            <td th:text="'$' + ${product.price}"></td>
+            <td th:text="${product.inv}"></td>
+            <td th:text="${product.minInventory}"></td>
+            <td th:text="${product.maxInventory}"></td>
+            <td th:text="${product.parts.size()}"></td>
+            <td>
+                <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn">Update</a>
+                <form th:action="@{/products/buy/{id}(id=${product.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn buy">Buy Now</button>
+                </form>
+                <a th:href="@{/products/delete/{id}(id=${product.id})}" class="btn delete"
+                   onclick="return confirm('Delete this product?')">Delete</a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    function filterProducts() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('productsTable');
+        const tr = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < tr.length; i++) {
+            const td = tr[i].getElementsByTagName('td')[0];
+            if (td) {
+                const txtValue = td.textContent || td.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                } else {
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function clearSearch() {
+        document.getElementById('searchInput').value = '';
+        filterProducts();
+    }
+</script>
+</body>
+</html>

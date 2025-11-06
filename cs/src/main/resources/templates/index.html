@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>KrisTechna</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>KrisTechna: "Connect. Evolve. Upgrade."</h1>
+    <p><strong>Inventory Management System</strong></p>
+
+    <div class="nav">
+        <a href="/">Home</a> |
+        <a href="/parts">Parts</a> |
+        <a href="/products">Products</a> |
+        <a href="/about">About</a>
+    </div>
+
+    <h2>Quick Actions</h2>
+    <div class="actions">
+        <a href="/parts/chooseType" class="btn">Add Part</a>
+        <a href="/products/add" class="btn">Add Product</a>
+    </div>
+
+    <h2>Parts Overview</h2>
+    <table>
+        <tr><th>Name</th><th>Price</th><th>Stock</th><th>Min</th><th>Max</th></tr>
+        <tr th:each="part : ${parts}">
+            <td th:text="${part.name}">Part Name</td>
+            <td th:text="'$' + ${part.price}">$0.00</td>
+            <td th:text="${part.inv}">0</td>
+            <td th:text="${part.minInventory}">0</td>
+            <td th:text="${part.maxInventory}">0</td>
+        </tr>
+    </table>
+
+    <h2>Products Overview</h2>
+    <table>
+        <tr><th>Name</th><th>Price</th><th>Stock</th><th>Min</th><th>Max</th><th>Parts Count</th></tr>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.name}">Product Name</td>
+            <td th:text="'$' + ${product.price}">$0.00</td>
+            <td th:text="${product.inv}">0</td>
+            <td th:text="${product.minInventory}">0</td>
+            <td th:text="${product.maxInventory}">0</td>
+            <td th:text="${product.parts.size()}">0</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

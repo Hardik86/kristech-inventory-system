@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${part.id != null} ? 'Edit Part' : 'Add Outsourced Part'">Add Outsourced Part</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${part.id != null} ? 'Edit Outsourced Part' : 'Add Outsourced Part'">Add Outsourced Part</h1>
+    <div class="nav">
+        <a href="/">Home</a> |
+        <a href="/parts">Parts</a> |
+        <a href="/products">Products</a>
+    </div>
+
+    <div th:if="${error}" style="color: red; margin: 10px 0;" th:text="${error}"></div>
+
+    <form th:action="${part.id != null} ?
+                          @{/parts/update/{id}(id=${part.id})} :
+                          @{/parts/add/outsourced}"
+          method="post">
+
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" name="name" th:value="${part.name}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Price:</label>
+            <input type="number" name="price" th:value="${part.price}" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label>Inventory:</label>
+            <input type="number" name="inv" th:value="${part.inv}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Min Inventory:</label>
+            <input type="number" name="minInventory" th:value="${part.minInventory}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Max Inventory:</label>
+            <input type="number" name="maxInventory" th:value="${part.maxInventory}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Company Name:</label>
+            <input type="text" name="companyName" th:value="${part.companyName}" required>
+        </div>
+
+        <button type="submit" class="btn">
+            <span th:text="${part.id != null} ? 'Update' : 'Add'"></span> Part
+        </button>
+        <a href="/parts" class="btn">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
