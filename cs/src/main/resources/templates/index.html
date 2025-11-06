@@ -24,7 +24,13 @@
 
     <h2>Parts Overview</h2>
     <table>
-        <tr><th>Name</th><th>Price</th><th>Stock</th><th>Min</th><th>Max</th></tr>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Min</th>
+            <th>Max</th>
+        </tr>
         <tr th:each="part : ${parts}">
             <td th:text="${part.name}">Part Name</td>
             <td th:text="'$' + ${part.price}">$0.00</td>
@@ -36,7 +42,14 @@
 
     <h2>Products Overview</h2>
     <table>
-        <tr><th>Name</th><th>Price</th><th>Stock</th><th>Min</th><th>Max</th><th>Parts Count</th></tr>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Parts Count</th>
+        </tr>
         <tr th:each="product : ${products}">
             <td th:text="${product.name}">Product Name</td>
             <td th:text="'$' + ${product.price}">$0.00</td>

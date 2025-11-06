@@ -112,14 +112,16 @@ public class PartController {
         try {
             Part existingPart = partService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid part ID"));
 
-            // Update fields
+            // Update fields:
+
             existingPart.setName(name);
             existingPart.setPrice(price);
             existingPart.setInv(inv);
             existingPart.setMinInventory(minInventory);
             existingPart.setMaxInventory(maxInventory);
 
-            // Update type-specific fields
+            // Update type-specific fields:
+
             if (existingPart instanceof InhousePart && machineId != null) {
                 ((InhousePart) existingPart).setMachineId(machineId);
             } else if (existingPart instanceof OutsourcedPart && companyName != null) {
@@ -145,13 +147,16 @@ public class PartController {
         try {
             Part part = partService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid part ID"));
 
-            // Check if part is used in any products
+            // Check if part is used in any products:
+
             if (part.getProducts() != null && !part.getProducts().isEmpty()) {
                 return "redirect:/parts?error=Part is used in products and cannot be deleted";
             }
 
             partService.delete(part);
+
             return "redirect:/parts?message=Part deleted successfully";
+
         } catch (Exception e) {
             return "redirect:/parts?error=Error deleting part";
         }

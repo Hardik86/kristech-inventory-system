@@ -4,18 +4,22 @@ import com.example.cs.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
 @Component
 public class SampleDataLoader implements CommandLineRunner {
-    @Autowired private PartService partService;
-    @Autowired private ProductService productService;
+    @Autowired
+    private PartService partService;
+    @Autowired
+    private ProductService productService;
 
     @Override
     public void run(String... args) {
         if (partService.findAll().isEmpty() && productService.findAll().isEmpty()) {
-            // Create parts
+            // Create parts:
+
             Part processor = new InhousePart("Intel i7 Processor", 299.99, 25, 5, 50, 1234);
             Part ram = new InhousePart("16GB DDR4 RAM", 89.99, 40, 10, 100, 5678);
             Part ssd = new InhousePart("1TB SSD", 79.99, 35, 5, 80, 9012);
@@ -28,7 +32,8 @@ public class SampleDataLoader implements CommandLineRunner {
             partService.save(motherboard);
             partService.save(gpu);
 
-            // Create products
+            // Create products:
+
             Product gamingPc = new Product("Gaming Desktop Pro", 1299.99, 10, 2, 20);
             gamingPc.setParts(new HashSet<>(Arrays.asList(processor, ram, ssd, motherboard, gpu)));
 

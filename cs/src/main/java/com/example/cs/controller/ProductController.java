@@ -32,7 +32,8 @@ public class ProductController {
         return "products";
     }
 
-    // ADD THIS GET MAPPING:
+
+
     @GetMapping("/add")
     public String showAddProductForm(Model model) {
         try {
@@ -100,14 +101,16 @@ public class ProductController {
         try {
             Product existingProduct = productService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
-            // Update the existing product
+            // Update the existing product:
+
             existingProduct.setName(name);
             existingProduct.setPrice(price);
             existingProduct.setInv(inv);
             existingProduct.setMinInventory(minInventory);
             existingProduct.setMaxInventory(maxInventory);
 
-            // Update parts
+            // Update parts:
+
             if (partIds != null) {
                 existingProduct.getParts().clear();
                 for (Long partId : partIds) {
@@ -118,6 +121,7 @@ public class ProductController {
             }
 
             productService.save(existingProduct);
+
             return "redirect:/products";
         } catch (Exception e) {
             model.addAttribute("error", "Error updating product: " + e.getMessage());

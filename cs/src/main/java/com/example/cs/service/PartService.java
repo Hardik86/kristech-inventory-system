@@ -13,8 +13,15 @@ public class PartService {
     @Autowired
     private PartRepository partRepository;
 
-    public List<Part> findAll() { return partRepository.findAll(); }
-    public Optional<Part> findById(Long id) { return partRepository.findById(id); }
+    public List<Part> findAll() {
+
+        return partRepository.findAll();
+    }
+
+    public Optional<Part> findById(Long id) {
+
+        return partRepository.findById(id);
+    }
 
     // UPDATE THE SAVE METHOD IN PartService:
     public Part save(Part part) {
@@ -26,7 +33,8 @@ public class PartService {
             throw new IllegalArgumentException("Inventory " + part.getInv() + " is above maximum " + part.getMaxInventory());
         }
 
-        // Multipack logic - only for new parts with same name
+        // Multipack logic - only for new parts with same name:
+
         if (part.getId() == null) {
             Optional<Part> existing = partRepository.findByName(part.getName());
             if (existing.isPresent()) {
@@ -39,6 +47,13 @@ public class PartService {
         return partRepository.save(part);
     }
 
-    public void delete(Part part) { partRepository.delete(part); }
-    public List<Part> findByNameContaining(String name) { return partRepository.findByNameContainingIgnoreCase(name); }
+    public void delete(Part part) {
+
+        partRepository.delete(part);
+    }
+
+    public List<Part> findByNameContaining(String name) {
+
+        return partRepository.findByNameContainingIgnoreCase(name);
+    }
 }
