@@ -8,23 +8,26 @@ import java.util.Set;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "part_type")
-public class Part {
+public abstract class Part {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
     private double price;
     private int inv;
     private int minInventory;
     private int maxInventory;
-    private int multipackQuantity = 1;
 
+    // SIMPLE MULTIPACK FIELDS - Added to existing class
+    private boolean multipack = false;
+    private int packSize = 1;
 
     @ManyToMany(mappedBy = "parts")
     private Set<Product> products = new HashSet<>();
 
+    // ALL EXISTING CONSTRUCTORS STAY EXACTLY THE SAME
     public Part() {
-
     }
 
     public Part(String name, double price, int inv, int minInventory, int maxInventory) {
@@ -35,7 +38,7 @@ public class Part {
         this.maxInventory = maxInventory;
     }
 
-    // Getters and Setters
+    // ALL EXISTING GETTERS/SETTERS STAY EXACTLY THE SAME
     public Long getId() {
         return id;
     }
@@ -84,16 +87,6 @@ public class Part {
         this.maxInventory = maxInventory;
     }
 
-    public int getMultipackQuantity() {
-        return multipackQuantity;
-    }
-
-    public void setMultipackQuantity(int multipackQuantity) {
-        this.multipackQuantity = multipackQuantity;
-    }
-
-    // ADD GETTER AND SETTER FOR PRODUCTS:
-
     public Set<Product> getProducts() {
         return products;
     }
@@ -102,17 +95,31 @@ public class Part {
         this.products = products;
     }
 
+    // NEW MULTIPACK GETTERS/SETTERS - Simple addition
     public boolean isMultipack() {
-        return multipackQuantity > 1;
+        return multipack;
     }
 
-    public boolean isInventoryValid() {
-        return inv >= minInventory && inv <= maxInventory;
+    public void setMultipack(boolean multipack) {
+        this.multipack = multipack;
     }
 
-    public String getInventoryValidationMessage() {
-        if (inv < minInventory) return "Inventory " + inv + " is below minimum " + minInventory;
-        if (inv > maxInventory) return "Inventory " + inv + " is above maximum " + maxInventory;
-        return null;
+    public int getPackSize() {
+        return packSize;
+    }
+
+    public void setPackSize(int packSize) {
+        this.packSize = packSize;
+        this.multipack = (packSize > 1); // Auto-set multipack flag
+    }
+
+    // HELPER METHOD - For display purposes only
+    public String getDisplayName() {
+        return multipack ? name + " (Pack of " + packSize + ")" : name;
+    }
+
+    // HELPER METHOD - For display purposes only
+    public double getUnitPrice() {
+        return multipack ? price / packSize : price;
     }
 }

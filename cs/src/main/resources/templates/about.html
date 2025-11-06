@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>About - KrisTechna</title>
     <link rel="stylesheet" href="/style.css">
@@ -8,24 +8,58 @@
 <div class="container">
     <h1>About KrisTechna</h1>
     <div class="nav">
-        <a href="/">Home</a> |
-        <a href="/parts">Parts</a> |
-        <a href="/products">Products</a> |
-        <a href="/about">About</a>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/parts}">Parts</a> |
+        <a th:href="@{/products}">Products</a> |
+        <a th:href="@{/about}">About</a>
     </div>
 
-    <h2>Connect. Evolve. Upgrade.</h2>
-    <p>KrisTechna is your premier technology solutions provider specializing in high-quality computer components and
-        custom systems.</p>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 8px; margin: 20px 0; text-align: center;">
+        <h2>Connect. Evolve. Upgrade.</h2>
+        <p><em>Founded by Hardik & Kristina - Building tech with purpose</em></p>
+    </div>
 
-    <h3>Our Mission</h3>
-    <p>We provide cutting-edge technology solutions for enthusiasts and professionals alike.</p>
+    <p>KrisTechna is your premier technology solutions provider specializing
+        in high-quality computer components and custom systems.</p>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 5px solid #667eea;">
+        <h3>Our Mission</h3>
+        <p>We provide cutting-edge technology solutions for enthusiasts and
+            professionals alike, while championing <strong>inclusive innovation</strong>
+            and <strong>sustainable practices</strong> in everything we do.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0;">
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; border-left: 5px solid #4CAF50;">
+            <h4>Community Focused</h4>
+            <p>Technology should serve everyone. We're committed to creating opportunities and breaking down barriers in tech.</p>
+        </div>
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; border-left: 5px solid #2196F3;">
+            <h4>Ethical Sourcing</h4>
+            <p>Every component is chosen with people and planet in mind. Fair labor and environmental responsibility guide our decisions.</p>
+        </div>
+        <div style="background: #fff3e0; padding: 20px; border-radius: 8px; border-left: 5px solid #FF9800;">
+            <h4>Inclusive Design</h4>
+            <p>Building technology that works for diverse needs and backgrounds.
+                Accessibility isn't an afterthought; it's our foundation.</p>
+        </div>
+    </div>
+
+    <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #e3f2fd;">
+        <h3>Our Values in Action</h3>
+        <p>We believe that great technology should make the world better,
+            not just faster. That's why we partner with organizations
+            that share our commitment to positive change and work to ensure
+            our growth benefits our entire community.</p>
+    </div>
 
     <h3>Contact</h3>
-    <p>Email: info@kristechna.com<br>
+    <p>Email: hardikhariyani86@gmail.com<br>
         Phone: (555) 123-TECH</p>
 
-    <a href="/" class="btn">Back to Home</a>
+    <a th:href="@{/}" class="btn">Back to Home</a>
+
+
 </div>
 </body>
 </html>

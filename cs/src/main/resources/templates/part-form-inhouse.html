@@ -8,12 +8,14 @@
 <div class="container">
     <h1 th:text="${part.id != null} ? 'Edit Inhouse Part' : 'Add Inhouse Part'">Add Inhouse Part</h1>
     <div class="nav">
-        <a href="/">Home</a> |
-        <a href="/parts">Parts</a> |
-        <a href="/products">Products</a>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/parts}">Parts</a> |
+        <a th:href="@{/products}">Products</a>
     </div>
 
-    <div th:if="${error}" style="color: red; margin: 10px 0;" th:text="${error}"></div>
+    <div th:if="${error}"
+         style="color: red; margin: 10px 0; padding: 10px; background-color: #ffe6e6; border: 1px solid #ffcccc; border-radius: 4px;"
+         th:text="${error}"></div>
 
     <form th:action="${part.id != null} ?
                           @{/parts/update/{id}(id=${part.id})} :
@@ -26,22 +28,39 @@
         </div>
 
         <div class="form-group">
-            <label>Price:</label>
-            <input type="number" name="price" th:value="${part.price}" step="0.01" required>
+            <label>Price ($):</label>
+            <input type="number" name="price" th:value="${part.price}" step="0.01" min="0.01" required>
+        </div>
+
+        <!-- NEW MULTIPACK FIELDS -->
+        <div class="form-group">
+            <label>
+                <input type="checkbox" name="multipack" th:checked="${part.multipack}">
+                This is a multipack
+            </label>
         </div>
 
         <div class="form-group">
-            <label>Inventory:</label>
+            <label>Items in Pack:</label>
+            <input type="number" name="packSize" th:value="${part.packSize}" min="1" required>
+            <small th:if="${part.multipack}">
+                🏷️ Pack of <span th:text="${part.packSize}"></span> |
+                Unit price: $<span th:text="${#numbers.formatDecimal(part.unitPrice, 1, 2)}"></span>
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label>Inventory (Packs):</label>
             <input type="number" name="inv" th:value="${part.inv}" required>
         </div>
 
         <div class="form-group">
-            <label>Min Inventory:</label>
+            <label>Min Inventory (Packs):</label>
             <input type="number" name="minInventory" th:value="${part.minInventory}" required>
         </div>
 
         <div class="form-group">
-            <label>Max Inventory:</label>
+            <label>Max Inventory (Packs):</label>
             <input type="number" name="maxInventory" th:value="${part.maxInventory}" required>
         </div>
 
@@ -53,7 +72,7 @@
         <button type="submit" class="btn">
             <span th:text="${part.id != null} ? 'Update' : 'Add'"></span> Part
         </button>
-        <a href="/parts" class="btn">Cancel</a>
+        <a th:href="@{/parts}" class="btn">Cancel</a>
     </form>
 </div>
 </body>

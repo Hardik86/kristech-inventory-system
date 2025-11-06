@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -22,19 +23,6 @@ public class ProductService {
     }
 
     public Product save(Product product) {
-        // Validate inventory range
-        if (product.getInv() < product.getMinInventory()) {
-            throw new IllegalArgumentException("Product inventory " + product.getInv() + " is below minimum " + product.getMinInventory());
-        }
-        if (product.getInv() > product.getMaxInventory()) {
-            throw new IllegalArgumentException("Product inventory " + product.getInv() + " is above maximum " + product.getMaxInventory());
-        }
-
-        // Validate product price vs parts total
-        if (!product.isPriceValid()) {
-            throw new IllegalArgumentException("Product price $" + product.getPrice() + " must be >= parts total $" + product.getTotalPartsPrice());
-        }
-
         return productRepository.save(product);
     }
 
@@ -43,17 +31,19 @@ public class ProductService {
     }
 
     public boolean purchaseProduct(Long productId) {
-        Optional<Product> productOpt = productRepository.findById(productId);
-        if (productOpt.isPresent() && productOpt.get().getInv() > 0) {
+        Optional<Product> productOpt = findById(productId);
+        if (productOpt.isPresent()) {
             Product product = productOpt.get();
-            product.setInv(product.getInv() - 1);
-            productRepository.save(product);
-            return true;
+            if (product.getInv() > 0) {
+                product.setInv(product.getInv() - 1);
+                save(product);
+                return true;
+            }
         }
         return false;
     }
 
-    public List<Product> findProductsByPartName(String partName) {
-        return productRepository.findByPartsNameContainingIgnoreCase(partName);
-    }
+    // REMOVED: The price validation method since we don't need it anymore
+    // Product price is now independent of parts costs
+    // Customer sets the price manually
 }

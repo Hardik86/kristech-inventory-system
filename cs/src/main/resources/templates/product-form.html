@@ -8,12 +8,12 @@
 <div class="container">
     <h1 th:text="${product.id != null} ? 'Edit Product' : 'Add Product'">Add Product</h1>
     <div class="nav">
-        <a href="/">Home</a> |
-        <a href="/parts">Parts</a> |
-        <a href="/products">Products</a>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/parts}">Parts</a> |
+        <a th:href="@{/products}">Products</a>
     </div>
 
-    <div th:if="${error}" style="color: red; margin: 10px 0;" th:text="${error}"></div>
+    <div th:if="${error}" style="color: red; margin: 10px 0; padding: 10px; background-color: #ffe6e6; border: 1px solid #ffcccc; border-radius: 4px;" th:text="${error}"></div>
 
     <form th:action="${product.id != null} ?
                           @{/products/update/{id}(id=${product.id})} :
@@ -26,8 +26,9 @@
         </div>
 
         <div class="form-group">
-            <label>Price:</label>
-            <input type="number" name="price" th:value="${product.price}" step="0.01" required>
+            <label>Price ($):</label>
+            <input type="number" name="price" th:value="${product.price}" step="0.01" min="0.01" required>
+            <small>Set your product price - independent of part costs</small>
         </div>
 
         <div class="form-group">
@@ -46,25 +47,29 @@
         </div>
 
         <div class="form-group">
-            <label>Associated Parts:</label>
+            <label>Select Parts (Optional):</label>
             <div class="parts-list">
                 <div th:each="part : ${allParts}">
                     <label>
+                        <!-- Parts start UNCHECKED - customer manually selects what they want -->
                         <input type="checkbox" name="partIds" th:value="${part.id}"
-                               th:checked="${product.parts.contains(part)}">
-                        <span th:text="${part.name + ' - $' + part.price}"></span>
-                        <small th:if="${part.multipackQuantity > 1}"
-                               th:text="' (Pack of ' + ${part.multipackQuantity} + ')'"
-                               style="color: #666;"></small>
+                               th:checked="${product.parts != null && product.parts.contains(part)}">
+                        <span th:text="${part.name}"></span> -
+                        $<span th:text="${#numbers.formatDecimal(part.price, 1, 2)}"></span>
+                        <small th:if="${part.multipack}"
+                               style="color: #2196F3; font-style: italic;">
+                            (Pack of <span th:text="${part.packSize}"></span>)
+                        </small>
                     </label>
                 </div>
             </div>
+            <small>Choose which parts to include in this product (optional)</small>
         </div>
 
         <button type="submit" class="btn">
             <span th:text="${product.id != null} ? 'Update' : 'Add'"></span> Product
         </button>
-        <a href="/products" class="btn">Cancel</a>
+        <a th:href="@{/products}" class="btn">Cancel</a>
     </form>
 </div>
 </body>

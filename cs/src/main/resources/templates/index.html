@@ -10,16 +10,16 @@
     <p><strong>Inventory Management System</strong></p>
 
     <div class="nav">
-        <a href="/">Home</a> |
-        <a href="/parts">Parts</a> |
-        <a href="/products">Products</a> |
-        <a href="/about">About</a>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/parts}">Parts</a> |
+        <a th:href="@{/products}">Products</a> |
+        <a th:href="@{/about}">About</a>
     </div>
 
     <h2>Quick Actions</h2>
     <div class="actions">
-        <a href="/parts/chooseType" class="btn">Add Part</a>
-        <a href="/products/add" class="btn">Add Product</a>
+        <a th:href="@{/parts/chooseType}" class="btn">Add Part</a>
+        <a th:href="@{/products/add}" class="btn">Add Product</a>
     </div>
 
     <h2>Parts Overview</h2>

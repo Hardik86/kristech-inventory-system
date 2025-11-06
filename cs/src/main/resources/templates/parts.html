@@ -8,17 +8,17 @@
 <div class="container">
     <h1>Parts Management</h1>
     <div class="nav">
-        <a href="/">Home</a> |
-        <a href="/parts">Parts</a> |
-        <a href="/products">Products</a> |
-        <a href="/about">About</a>
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/parts}">Parts</a> |
+        <a th:href="@{/products}">Products</a> |
+        <a th:href="@{/about}">About</a>
     </div>
 
     <!-- MESSAGE DISPLAY -->
     <div th:if="${param.message}" class="success" th:text="${param.message}"></div>
     <div th:if="${param.error}" class="error" th:text="${param.error}"></div>
 
-    <!-- SEARCH BAR -->
+    <!-- SEARCH BAR (UNCHANGED - STILL WORKS) -->
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Search parts..." onkeyup="filterParts()">
         <button onclick="clearSearch()" class="btn">Clear</button>
@@ -40,15 +40,21 @@
         <tr th:each="part : ${parts}">
             <td>
                 <span th:text="${part.name}"></span>
-                <small th:if="${part.multipackQuantity > 1}"
-                       th:text="' (Pack of ' + ${part.multipackQuantity} + ')'"
-                       style="color: #666; font-size: 0.9em;"></small>
+                <small th:if="${part.multipack}"
+                       th:text="' (Pack of ' + ${part.packSize} + ')'"
+                       style="color: #2196F3; font-style: italic;"></small>
             </td>
-            <td th:text="'$' + ${part.price}"></td>
+            <td>
+                $<span th:text="${#numbers.formatDecimal(part.price, 1, 2)}"></span>
+                <small th:if="${part.multipack}" style="display: block; color: #666; font-size: 0.8em;">
+                    $<span th:text="${#numbers.formatDecimal(part.unitPrice, 1, 2)}"></span>/unit
+                </small>
+            </td>
             <td th:text="${part.inv}"></td>
             <td th:text="${part.minInventory}"></td>
             <td th:text="${part.maxInventory}"></td>
             <td>
+                <!-- UPDATE/DELETE BUTTONS (UNCHANGED - STILL WORK) -->
                 <a th:href="@{/parts/edit/{id}(id=${part.id})}" class="btn">Update</a>
                 <a th:href="@{/parts/delete/{id}(id=${part.id})}" class="btn delete"
                    onclick="return confirm('Delete this part?')">Delete</a>
@@ -57,6 +63,7 @@
     </table>
 </div>
 
+<!-- SEARCH JAVASCRIPT (UNCHANGED - STILL WORKS) -->
 <script>
     function filterParts() {
         const input = document.getElementById('searchInput');

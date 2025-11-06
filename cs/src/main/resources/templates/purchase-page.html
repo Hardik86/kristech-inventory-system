@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Purchase - KrisTechna</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Complete Your Purchase</h1>
+    <div class="nav">
+        <a th:href="@{/}">Home</a> |
+        <a th:href="@{/products}">Back to Products</a>
+    </div>
+
+    <!-- Product Information -->
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h2 th:text="${product.name}">Product Name</h2>
+        <p><strong>Price: $</strong><span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
+        <p><strong>In Stock:</strong> <span th:text="${product.inv}"></span> units</p>
+    </div>
+
+    <!-- Parts Selection -->
+    <div style="background: white; padding: 20px; border-radius: 8px; border: 2px solid #e3f2fd;">
+        <h3>Customize Your Order</h3>
+        <p>Select additional parts to include with your purchase:</p>
+
+        <form th:action="@{/purchase/complete}" method="post">
+            <input type="hidden" name="productId" th:value="${product.id}">
+
+            <div class="parts-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+                <div th:each="part : ${allParts}" style="margin: 10px 0; padding: 10px; border-bottom: 1px solid #eee;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" name="selectedPartIds" th:value="${part.id}" style="margin-right: 10px;">
+                        <div style="flex: 1;">
+                            <strong th:text="${part.name}"></strong>
+                            <div style="color: #666; font-size: 0.9em;">
+                                $<span th:text="${#numbers.formatDecimal(part.price, 1, 2)}"></span>
+                                <span th:if="${part.multipack}" style="color: #2196F3;">
+                                    (Pack of <span th:text="${part.packSize}"></span>)
+                                </span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div style="background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h4>Order Summary</h4>
+                <p><strong>Product:</strong> $<span th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span></p>
+                <p><strong>Selected Parts:</strong> $<span id="partsTotal">0.00</span></p>
+                <p style="font-size: 1.2em; font-weight: bold;">
+                    <strong>Total: $</strong><span id="totalCost" th:text="${#numbers.formatDecimal(product.price, 1, 2)}"></span>
+                </p>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn" style="background: #4CAF50;">Complete Purchase</button>
+                <a th:href="@{/products}" class="btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript to update totals in real-time -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('input[name="selectedPartIds"]');
+        const productPrice = parseFloat(document.getElementById('totalCost').textContent);
+        const partsTotalElement = document.getElementById('partsTotal');
+        const totalCostElement = document.getElementById('totalCost');
+
+        function updateTotals() {
+            let partsTotal = 0;
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    // Get the price from the displayed text
+                    const partElement = checkbox.closest('div');
+                    const priceText = partElement.querySelector('div div').textContent;
+                    const priceMatch = priceText.match(/\$([0-9.]+)/);
+                    if (priceMatch) {
+                        partsTotal += parseFloat(priceMatch[1]);
+                    }
+                }
+            });
+
+            partsTotalElement.textContent = partsTotal.toFixed(2);
+            totalCostElement.textContent = (productPrice + partsTotal).toFixed(2);
+        }
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateTotals);
+        });
+    });
+</script>
+</body>
+</html>

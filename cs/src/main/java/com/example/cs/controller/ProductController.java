@@ -22,6 +22,7 @@ public class ProductController {
     @Autowired
     private PartService partService;
 
+    // ALL EXISTING MAPPINGS UNCHANGED
     @GetMapping
     public String listProducts(Model model) {
         try {
@@ -32,11 +33,10 @@ public class ProductController {
         return "products";
     }
 
-
-
     @GetMapping("/add")
     public String showAddProductForm(Model model) {
         try {
+            // Product starts with NO parts selected
             model.addAttribute("product", new Product());
             model.addAttribute("allParts", partService.findAll());
         } catch (Exception e) {
@@ -46,23 +46,61 @@ public class ProductController {
         return "product-form";
     }
 
+    // UPDATED: Removed automatic price validation against parts
     @PostMapping("/add")
     public String addProduct(@RequestParam String name,
                              @RequestParam double price,
                              @RequestParam int inv,
                              @RequestParam int minInventory,
                              @RequestParam int maxInventory,
-                             @RequestParam(required = false) List<Long> partIds,
+                             @RequestParam(required = false) List<Long> partIds, // Can be null if no parts selected
                              Model model) {
         try {
+            // EXISTING PRICE VALIDATION (price must be > 0)
+            if (price <= 0) {
+                model.addAttribute("error", "ERROR: Price must be greater than 0");
+                model.addAttribute("product", new Product(name, price, inv, minInventory, maxInventory));
+                try {
+                    model.addAttribute("allParts", partService.findAll());
+                } catch (Exception ex) {
+                    model.addAttribute("allParts", new ArrayList<>());
+                }
+                return "product-form";
+            }
+
+            // EXISTING INVENTORY VALIDATION
+            if (inv < minInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot be below minimum (" + minInventory + ")");
+                model.addAttribute("product", new Product(name, price, inv, minInventory, maxInventory));
+                try {
+                    model.addAttribute("allParts", partService.findAll());
+                } catch (Exception ex) {
+                    model.addAttribute("allParts", new ArrayList<>());
+                }
+                return "product-form";
+            }
+            if (inv > maxInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot exceed maximum (" + maxInventory + ")");
+                model.addAttribute("product", new Product(name, price, inv, minInventory, maxInventory));
+                try {
+                    model.addAttribute("allParts", partService.findAll());
+                } catch (Exception ex) {
+                    model.addAttribute("allParts", new ArrayList<>());
+                }
+                return "product-form";
+            }
+
+            // CREATE PRODUCT - Customer sets price independently
             Product product = new Product(name, price, inv, minInventory, maxInventory);
 
-            if (partIds != null) {
+            // ONLY ADD PARTS IF CUSTOMER EXPLICITLY SELECTED THEM
+            if (partIds != null && !partIds.isEmpty()) {
                 product.setParts(new HashSet<>());
                 for (Long partId : partIds) {
                     partService.findById(partId).ifPresent(part -> product.getParts().add(part));
                 }
             }
+            // If partIds is null, product is created with NO parts (empty set)
 
             productService.save(product);
             return "redirect:/products";
@@ -89,6 +127,7 @@ public class ProductController {
         }
     }
 
+    // UPDATED: Removed automatic price validation against parts
     @PostMapping("/update/{id}")
     public String updateProduct(@PathVariable("id") Long id,
                                 @RequestParam String name,
@@ -96,27 +135,66 @@ public class ProductController {
                                 @RequestParam int inv,
                                 @RequestParam int minInventory,
                                 @RequestParam int maxInventory,
-                                @RequestParam(required = false) List<Long> partIds,
+                                @RequestParam(required = false) List<Long> partIds, // Can be null if no parts selected
                                 Model model) {
         try {
+            // EXISTING PRICE VALIDATION
+            if (price <= 0) {
+                model.addAttribute("error", "ERROR: Price must be greater than 0");
+                try {
+                    Product existingProduct = productService.findById(id).orElse(new Product());
+                    model.addAttribute("product", existingProduct);
+                    model.addAttribute("allParts", partService.findAll());
+                } catch (Exception ex) {
+                    model.addAttribute("product", new Product());
+                    model.addAttribute("allParts", new ArrayList<>());
+                }
+                return "product-form";
+            }
+
+            // EXISTING INVENTORY VALIDATION
+            if (inv < minInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot be below minimum (" + minInventory + ")");
+                try {
+                    Product existingProduct = productService.findById(id).orElse(new Product());
+                    model.addAttribute("product", existingProduct);
+                    model.addAttribute("allParts", partService.findAll());
+                } catch (Exception ex) {
+                    model.addAttribute("product", new Product());
+                    model.addAttribute("allParts", new ArrayList<>());
+                }
+                return "product-form";
+            }
+            if (inv > maxInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot exceed maximum (" + maxInventory + ")");
+                try {
+                    Product existingProduct = productService.findById(id).orElse(new Product());
+                    model.addAttribute("product", existingProduct);
+                    model.addAttribute("allParts", partService.findAll());
+                } catch (Exception ex) {
+                    model.addAttribute("product", new Product());
+                    model.addAttribute("allParts", new ArrayList<>());
+                }
+                return "product-form";
+            }
+
             Product existingProduct = productService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
             // Update the existing product:
-
             existingProduct.setName(name);
-            existingProduct.setPrice(price);
+            existingProduct.setPrice(price); // Customer sets price independently
             existingProduct.setInv(inv);
             existingProduct.setMinInventory(minInventory);
             existingProduct.setMaxInventory(maxInventory);
 
-            // Update parts:
-
+            // UPDATE PARTS - Only use what customer explicitly selected
             if (partIds != null) {
                 existingProduct.getParts().clear();
                 for (Long partId : partIds) {
                     partService.findById(partId).ifPresent(part -> existingProduct.getParts().add(part));
                 }
             } else {
+                // If partIds is null, clear all parts (customer wants no parts)
                 existingProduct.getParts().clear();
             }
 
@@ -136,6 +214,7 @@ public class ProductController {
         }
     }
 
+    // DELETE MAPPING UNCHANGED
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {
         try {
@@ -147,6 +226,7 @@ public class ProductController {
         }
     }
 
+    // BUY MAPPING UNCHANGED
     @PostMapping("/buy/{id}")
     public String buyProduct(@PathVariable("id") Long id, Model model) {
         try {

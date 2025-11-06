@@ -19,6 +19,7 @@ public class PartController {
     @Autowired
     private PartService partService;
 
+    // ALL EXISTING MAPPINGS UNCHANGED
     @GetMapping
     public String listParts(Model model) {
         try {
@@ -34,7 +35,6 @@ public class PartController {
         return "part-type-select";
     }
 
-    // ADD THESE GET MAPPINGS:
     @GetMapping("/add/inhouse")
     public String showAddInhouseForm(Model model) {
         model.addAttribute("part", new InhousePart());
@@ -47,6 +47,7 @@ public class PartController {
         return "part-form-outsourced";
     }
 
+    // UPDATED: Added multipack and packSize parameters
     @PostMapping("/add/inhouse")
     public String addInhousePart(@RequestParam String name,
                                  @RequestParam double price,
@@ -54,17 +55,53 @@ public class PartController {
                                  @RequestParam int minInventory,
                                  @RequestParam int maxInventory,
                                  @RequestParam int machineId,
+                                 @RequestParam(defaultValue = "false") boolean multipack, // NEW
+                                 @RequestParam(defaultValue = "1") int packSize, // NEW
                                  Model model) {
         try {
+            // EXISTING VALIDATION STAYS EXACTLY THE SAME
+            if (price <= 0) {
+                model.addAttribute("error", "ERROR: Price must be greater than 0");
+                InhousePart part = new InhousePart(name, price, inv, minInventory, maxInventory, machineId);
+                part.setMultipack(multipack);
+                part.setPackSize(packSize);
+                model.addAttribute("part", part);
+                return "part-form-inhouse";
+            }
+
+            if (inv < minInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot be below minimum (" + minInventory + ")");
+                InhousePart part = new InhousePart(name, price, inv, minInventory, maxInventory, machineId);
+                part.setMultipack(multipack);
+                part.setPackSize(packSize);
+                model.addAttribute("part", part);
+                return "part-form-inhouse";
+            }
+            if (inv > maxInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot exceed maximum (" + maxInventory + ")");
+                InhousePart part = new InhousePart(name, price, inv, minInventory, maxInventory, machineId);
+                part.setMultipack(multipack);
+                part.setPackSize(packSize);
+                model.addAttribute("part", part);
+                return "part-form-inhouse";
+            }
+
             InhousePart part = new InhousePart(name, price, inv, minInventory, maxInventory, machineId);
+            part.setMultipack(multipack); // SET MULTIPACK
+            part.setPackSize(packSize);   // SET PACK SIZE
             partService.save(part);
             return "redirect:/parts";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            InhousePart part = new InhousePart(name, price, inv, minInventory, maxInventory, machineId);
+            part.setMultipack(multipack);
+            part.setPackSize(packSize);
+            model.addAttribute("part", part);
             return "part-form-inhouse";
         }
     }
 
+    // UPDATED: Added multipack and packSize parameters
     @PostMapping("/add/outsourced")
     public String addOutsourcedPart(@RequestParam String name,
                                     @RequestParam double price,
@@ -72,13 +109,48 @@ public class PartController {
                                     @RequestParam int minInventory,
                                     @RequestParam int maxInventory,
                                     @RequestParam String companyName,
+                                    @RequestParam(defaultValue = "false") boolean multipack, // NEW
+                                    @RequestParam(defaultValue = "1") int packSize, // NEW
                                     Model model) {
         try {
+            // EXISTING VALIDATION STAYS EXACTLY THE SAME
+            if (price <= 0) {
+                model.addAttribute("error", "ERROR: Price must be greater than 0");
+                OutsourcedPart part = new OutsourcedPart(name, price, inv, minInventory, maxInventory, companyName);
+                part.setMultipack(multipack);
+                part.setPackSize(packSize);
+                model.addAttribute("part", part);
+                return "part-form-outsourced";
+            }
+
+            if (inv < minInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot be below minimum (" + minInventory + ")");
+                OutsourcedPart part = new OutsourcedPart(name, price, inv, minInventory, maxInventory, companyName);
+                part.setMultipack(multipack);
+                part.setPackSize(packSize);
+                model.addAttribute("part", part);
+                return "part-form-outsourced";
+            }
+            if (inv > maxInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot exceed maximum (" + maxInventory + ")");
+                OutsourcedPart part = new OutsourcedPart(name, price, inv, minInventory, maxInventory, companyName);
+                part.setMultipack(multipack);
+                part.setPackSize(packSize);
+                model.addAttribute("part", part);
+                return "part-form-outsourced";
+            }
+
             OutsourcedPart part = new OutsourcedPart(name, price, inv, minInventory, maxInventory, companyName);
+            part.setMultipack(multipack); // SET MULTIPACK
+            part.setPackSize(packSize);   // SET PACK SIZE
             partService.save(part);
             return "redirect:/parts";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
+            OutsourcedPart part = new OutsourcedPart(name, price, inv, minInventory, maxInventory, companyName);
+            part.setMultipack(multipack);
+            part.setPackSize(packSize);
+            model.addAttribute("part", part);
             return "part-form-outsourced";
         }
     }
@@ -99,6 +171,7 @@ public class PartController {
         }
     }
 
+    // UPDATED: Added multipack and packSize parameters
     @PostMapping("/update/{id}")
     public String updatePart(@PathVariable("id") Long id,
                              @RequestParam String name,
@@ -108,20 +181,45 @@ public class PartController {
                              @RequestParam int maxInventory,
                              @RequestParam(required = false) Integer machineId,
                              @RequestParam(required = false) String companyName,
+                             @RequestParam(defaultValue = "false") boolean multipack, // NEW
+                             @RequestParam(defaultValue = "1") int packSize, // NEW
                              Model model) {
         try {
+            // EXISTING VALIDATION STAYS EXACTLY THE SAME
+            if (price <= 0) {
+                model.addAttribute("error", "ERROR: Price must be greater than 0");
+                Part part = partService.findById(id).orElse(new InhousePart());
+                model.addAttribute("part", part);
+                return (part instanceof InhousePart) ? "part-form-inhouse" : "part-form-outsourced";
+            }
+
+            if (inv < minInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot be below minimum (" + minInventory + ")");
+                Part part = partService.findById(id).orElse(new InhousePart());
+                model.addAttribute("part", part);
+                return (part instanceof InhousePart) ? "part-form-inhouse" : "part-form-outsourced";
+            }
+            if (inv > maxInventory) {
+                model.addAttribute("error", "ERROR: Inventory (" + inv + ") cannot exceed maximum (" + maxInventory + ")");
+                Part part = partService.findById(id).orElse(new InhousePart());
+                model.addAttribute("part", part);
+                return (part instanceof InhousePart) ? "part-form-inhouse" : "part-form-outsourced";
+            }
+
             Part existingPart = partService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid part ID"));
 
-            // Update fields:
-
+            // Update existing fields (UNCHANGED)
             existingPart.setName(name);
             existingPart.setPrice(price);
             existingPart.setInv(inv);
             existingPart.setMinInventory(minInventory);
             existingPart.setMaxInventory(maxInventory);
 
-            // Update type-specific fields:
+            // Update multipack fields (NEW)
+            existingPart.setMultipack(multipack);
+            existingPart.setPackSize(packSize);
 
+            // Update type-specific fields (UNCHANGED)
             if (existingPart instanceof InhousePart && machineId != null) {
                 ((InhousePart) existingPart).setMachineId(machineId);
             } else if (existingPart instanceof OutsourcedPart && companyName != null) {
@@ -142,13 +240,13 @@ public class PartController {
         }
     }
 
+    // DELETE MAPPING - COMPLETELY UNCHANGED
     @GetMapping("/delete/{id}")
     public String deletePart(@PathVariable("id") Long id) {
         try {
             Part part = partService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid part ID"));
 
             // Check if part is used in any products:
-
             if (part.getProducts() != null && !part.getProducts().isEmpty()) {
                 return "redirect:/parts?error=Part is used in products and cannot be deleted";
             }
